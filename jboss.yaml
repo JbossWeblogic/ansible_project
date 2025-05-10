@@ -1,6 +1,6 @@
 ---
 - name: Unzip and Start JBoss Server
-  hosts: jboss_servers
+  hosts: all
   become: yes
 
   vars:
@@ -21,12 +21,4 @@
       group: devops
       recurse: yes
 
-  - name: Start JBoss Server
-    command: "{{ jboss_home }}/bin/standalone.sh"
-    async: 1000
-    poll: 0
-
-  - name: Wait for JBoss Server to start
-    wait_for:
-      port: 8080
-      timeout: 300
+  
