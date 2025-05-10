@@ -1,0 +1,32 @@
+---
+- name: Unzip and Start JBoss Server
+  hosts: jboss_servers
+  become: yes
+
+  vars:
+    jboss_zip_file: "/opt/jboss-eap-7.4.0.zip"
+    jboss_home: "/opt/jboss-eap-7.4.0"
+
+  tasks:
+  - name: Unzip JBoss
+    unarchive:
+      src: "{{ jboss_zip_file }}"
+      dest: "/opt"
+      creates: "{{ jboss_home }}"
+
+  - name: Set permissions
+    file:
+      path: "{{ jboss_home }}"
+      owner: devops
+      group: devops
+      recurse: yes
+
+  - name: Start JBoss Server
+    command: "{{ jboss_home }}/bin/standalone.sh"
+    async: 1000
+    poll: 0
+
+  - name: Wait for JBoss Server to start
+    wait_for:
+      port: 8080
+      timeout: 300
